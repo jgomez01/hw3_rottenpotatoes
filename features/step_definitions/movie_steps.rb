@@ -1,7 +1,6 @@
 # Add a declarative step here for populating the DB with movies.
 require 'date'
 Given /the following movies exist/ do |movies_table|
-  puts movies_table
   movies_table.hashes.each do |movie|
       Movie.create!(movie)
   end
