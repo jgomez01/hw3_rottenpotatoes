@@ -43,6 +43,13 @@ end
 
 Given /^(?:|I )am on (.+)$/ do |page_name|
   visit path_to(page_name)
+#    determine ratings set
+    temp = Movie.find_by_sql("select rating from movies group by rating;")
+    @all_ratings=[]
+    temp.each do |t|
+      @all_ratings.push t.rating
+    end  
+
 end
 
 When /^(?:|I )go to (.+)$/ do |page_name|
@@ -51,10 +58,6 @@ end
 
 When /^(?:|I )press "([^"]*)"$/ do |button|
   click_button(button)
-end
-
-When /^(?:|I )follow "([^"]*)"$/ do |link|
-  click_link(link)
 end
 
 When /^(?:|I )fill in "([^"]*)" with "([^"]*)"$/ do |field, value|
@@ -67,11 +70,11 @@ end
 
 # Use this to fill in an entire form with data from a table. Example:
 #
-#   When I fill in the following:
-#     | Account Number | 5002       |
-#     | Expiry date    | 2009-11-01 |
-#     | Note           | Nice guy   |
-#     | Wants Email?   |            |
+# When I fill in the following:
+# | Account Number | 5002 |
+# | Expiry date | 2009-11-01 |
+# | Note | Nice guy |
+# | Wants Email? | |
 #
 # TODO: Add support for checkbox, select or option
 # based on naming conventions.
@@ -207,7 +210,7 @@ end
 
 Then /^the "([^"]*)" checkbox(?: within (.*))? should be checked$/ do |label, parent|
   with_scope(parent) do
-    field_checked = find_field(label)['checked']
+    
     if field_checked.respond_to? :should
       field_checked.should be_true
     else
@@ -240,7 +243,7 @@ Then /^(?:|I )should have the following query string:$/ do |expected_pairs|
   query = URI.parse(current_url).query
   actual_params = query ? CGI.parse(query) : {}
   expected_params = {}
-  expected_pairs.rows_hash.each_pair{|k,v| expected_params[k] = v.split(',')} 
+  expected_pairs.rows_hash.each_pair{|k,v| expected_params[k] = v.split(',')}
   
   if actual_params.respond_to? :should
     actual_params.should == expected_params
